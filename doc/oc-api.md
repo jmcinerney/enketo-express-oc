@@ -175,6 +175,16 @@ Same as POST /instance/note except that this view has a **Close button** in the 
 
 Loads a record headlessly, adds autoqueries and submits. 
 
+The result object has a `"message"`, `"code"`, and `"fieldsubmissions"` property. The `"message"` value contains an error message if the `"code"` is not `201` (otherwise the value is "OK"). The `"fieldsubmissions"` value is the number of fieldsubmission that were successfully submitted. For example:
+
+```json
+{
+    "message": "OK",
+    "fieldsubmissions": 1,
+    "code": 201
+}
+```
+
 Otherwise, use like [POST /instance](http://apidocs.enketo.org/v2/#/post-instance) (without `return_url` and `go_to` parameters)
 
 ### DELETE /instance
