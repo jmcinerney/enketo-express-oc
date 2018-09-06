@@ -22,7 +22,7 @@ block script
     script(src=`${basePath}/js/enketo-webform${suffix}-dev-bundle.js`)
   
   -// load jini stuff asynchronously (OC)
-  if jini
+  if jini && !headless
     script(async, src=`${jini['script url']}`)
     script.
       var jiniSheet = document.createElement('link');

@@ -17,7 +17,7 @@ html(manifest=manifest, lang=language, dir=dir(language))
 
     block global
 
-  - var cl = (iframe) ? 'iframe' : ''
+  - var cl = (iframe) ? 'iframe' : ( headless ? 'headless' : '')
   body(class=cl)
     block content
 

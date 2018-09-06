@@ -11,6 +11,12 @@ $secondary-color: #eeeeee;
     max-height: inherit;
 }
 
+// headless views
+.headless {
+    //background-image: repeating-linear-gradient(45deg, #ccc, #ccc 30px, #dbdbdb 30px, #dbdbdb 60px);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='50px' width='110px'><text x='0' y='15' fill='gray' font-size='20'>headless</text></svg>");
+}
+
 // readonly and note-only views
 .oc-view,
 .touch .oc-view {

@@ -22,6 +22,7 @@ router.param( 'encrypted_enketo_id_fs_c', routerUtils.encryptedEnketoIdFsC );
 router.param( 'encrypted_enketo_id_fs_participant', routerUtils.encryptedEnketoIdFsParticipant );
 router.param( 'encrypted_enketo_id_rfc', routerUtils.encryptedEnketoIdEditRfc );
 router.param( 'encrypted_enketo_id_rfc_c', routerUtils.encryptedEnketoIdEditRfcC );
+router.param( 'encrypted_enketo_id_headless', routerUtils.encryptedEnketoIdEditHeadless );
 
 router.param( 'mod', ( req, rex, next, mod ) => {
     if ( mod === 'i' ) {
@@ -41,6 +42,7 @@ router
     } )
     .get( '/x/', offlineWebform )
     .get( '/_/', offlineWebform )
+    .get( '*/headless*', _setHeadless )
     .get( '/preview*', _setJini )
     .get( /\/(single|edit)\/fs(\/rfc)?(\/c)?\/i/, _setJini )
     .get( /\/edit\/fs\/(?!(participant|rfc))/, _setCompleteButton )
@@ -69,6 +71,8 @@ router
     .get( '/edit/fs/dn/:mod/:encrypted_enketo_id_view_dn', fieldSubmission )
     .get( '/edit/fs/dn/c/:mod/:encrypted_enketo_id_view_dnc', fieldSubmission )
     .get( '/edit/fs/participant/:mod/:encrypted_enketo_id_fs_participant', fieldSubmission )
+    .get( '/edit/fs/headless/:encrypted_enketo_id_headless', fieldSubmission )
+    //.get( '/edit/fs/rfc/headless/:enketo_id_rfc', fieldSubmission )
     .get( '/view/fs/:encrypted_enketo_id_view', fieldSubmission )
     .get( '/view/fs/:mod/:encrypted_enketo_id_view', fieldSubmission )
     .get( '/xform/:enketo_id', xform )
@@ -143,6 +147,11 @@ function _setCloseButtonClass( req, res, next ) {
     next();
 }
 
+function _setHeadless( req, res, next ) {
+    req.headless = true;
+    next();
+}
+
 function fieldSubmission( req, res, next ) {
     var options = {
         type: 'fs',
@@ -151,7 +160,8 @@ function fieldSubmission( req, res, next ) {
         jini: req.jini,
         participant: req.participant,
         completeButton: req.completeButton,
-        closeButtonIdSuffix: req.closeButtonIdSuffix
+        closeButtonIdSuffix: req.closeButtonIdSuffix,
+        headless: !!req.headless
     };
 
     _renderWebform( req, res, next, options );

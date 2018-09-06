@@ -141,7 +141,7 @@ Comment.prototype._setCloseHandler = function() {
 
     this.$linkedQuestion.on( 'addquery.oc', function() {
         var currentStatus = that._getCurrentStatus( that.notes );
-        var errorType = this.classList.contains( 'invalid-constraint' ) ? 'constraint' : ( this.classList.contains( 'invalid-required' ) ? 'required' : null );
+        var errorType = this.classList.contains( 'invalid-constraint' ) ? 'constraint' : ( this.classList.contains( 'invalid-required' ) ? 'required' : ( this.classList.contains( 'invalid-relevant' ) ? 'relevant' : null ) );
         if ( errorType && currentStatus !== 'updated' && currentStatus !== 'new' ) {
             var status = ( currentStatus === '' ) ? 'new' : 'updated';
             var errorMsg = $( this ).find( '.or-' + errorType + '-msg.active' ).text();

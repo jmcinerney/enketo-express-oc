@@ -16,6 +16,7 @@ function FieldSubmissionQueue() {
     this.submissionQueue = {};
     this.lastAdded = {};
     this.repeatRemovalCounter = 0;
+    this.submittedCounter = 0;
     this.queuedSubmitAllRequest = undefined;
     this._uploadStatus.init();
 }
@@ -204,6 +205,7 @@ FieldSubmissionQueue.prototype._submitOne = function( url, fd, method ) {
             } )
             .done( function( data, textStatus, jqXHR ) {
                 if ( jqXHR.status === 201 || jqXHR.status === 202 ) {
+                    that.submittedCounter = jqXHR.status === 201 ? that.submittedCounter + 1 : that.submittedCounter;
                     resolve( jqXHR.status );
                 } else {
                     throw jqXHR;

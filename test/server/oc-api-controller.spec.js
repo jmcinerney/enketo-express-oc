@@ -682,6 +682,41 @@ describe( 'api', () => {
                 return obj;
             } ).forEach( testResponse );
 
+            // Headless tests
+            [ {
+                // no instanceId
+                method: 'post',
+                endpoint: '/instance/headless',
+                auth: true,
+                instance: true,
+                status: 400
+            }, {
+                // no instance
+                method: 'post',
+                endpoint: '/instance/headless',
+                auth: true,
+                instanceId: 'AAA',
+                instance: false,
+                status: 400
+            }, {
+                // no instanceId, RFC
+                method: 'post',
+                endpoint: '/instance/headless',
+                auth: true,
+                instance: true,
+                status: 400
+            }, {
+                // no instance, RFC
+                method: 'post',
+                endpoint: '/instance/headless',
+                auth: true,
+                instanceId: 'AAA',
+                instance: false,
+                status: 400
+            } ].map( obj => {
+                obj.version = version;
+                return obj;
+            } ).forEach( testResponse );
         } );
 
         // Test common parameters

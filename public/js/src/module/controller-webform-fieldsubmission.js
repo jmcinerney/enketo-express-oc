@@ -122,6 +122,7 @@ function init( selector, data, loadWarnings ) {
             if ( loadErrors.length > 0 ) {
                 throw loadErrors;
             }
+
             resolve( form );
         } )
         .catch( function( error ) {
@@ -133,6 +134,28 @@ function init( selector, data, loadWarnings ) {
 
             advice = ( data.instanceStr ) ? t( 'alert.loaderror.editadvice' ) : t( 'alert.loaderror.entryadvice' );
             gui.alertLoadErrors( loadErrors, advice );
+        } )
+        .then( function( form ) {
+            if ( settings.headless ) {
+                console.log( 'doing headless things' );
+                var $result = $( '<div id="headless-result"/>' );
+                if ( loadErrors.length ) {
+                    $result.append( '<span id="error">' + loadErrors[ 0 ] + '</span>' );
+                    $( 'body' ).append( $result );
+                    return form;
+                }
+                return _headlessCloseComplete()
+                    .then( function( fieldsubmissions ) {
+                        $result.append( '<span id="fieldsubmissions">' + fieldsubmissions + '</span>' );
+                    } )
+                    .catch( function( error ) {
+                        $result.append( '<span id="error">' + error.message + '</span>' );
+                    } )
+                    .then( function() {
+                        $( 'body' ).append( $result );
+                        return form;
+                    } );
+            }
         } )
         .then( function( form ) {
             // OC will return even if there were errors.
@@ -167,6 +190,42 @@ function init( selector, data, loadWarnings ) {
             .trigger( 'formreset' );
     }
 }*/
+
+function _headlessCloseComplete() {
+    return form.validate()
+        .then( function( valid ) {
+            var $invalid = $();
+            if ( !valid ) {
+                $invalid = form.view.$.find( '.invalid-relevant, .invalid-constraint, .invalid-required' );
+                // Trigger auto-queries for relevant, constraint and required (handled in DN widget)
+                _autoAddQueries( $invalid );
+            }
+
+            // Check if autoqueries have made everything valid already, otherwise try validating again.
+            if ( $invalid.length ) {
+                return form.validate();
+            }
+            return valid;
+        } ).then( function( valid ) {
+            if ( !valid || reasons.getInvalidFields().length ) {
+                throw new Error( 'Could not create valid record using autoqueries' );
+            }
+            return fieldSubmissionQueue.submitAll();
+        } ).then( function() {
+            console.log( 'submissions left in queue', fieldSubmissionQueue.get() );
+            if ( Object.keys( fieldSubmissionQueue.get() ).length > 0 ) {
+                throw new Error( 'Failed to submit fieldsubmissions' );
+            }
+            // TODO: add logic for Completed records
+            var completeRecord = false;
+            if ( completeRecord ) {
+                return fieldSubmissionQueue.complete( form.instanceID, form.deprecatedID );
+            }
+        } ).then( function() {
+            return ( fieldSubmissionQueue.submittedCounter );
+        } );
+}
+
 
 /**
  * Closes the form after checking that the queue is empty.
@@ -435,6 +494,10 @@ function _complete( bypassConfirmation ) {
         } );
 }
 
+/**
+ * Triggers autoqueries. 
+ * @param {*} $questions 
+ */
 function _autoAddQueries( $questions ) {
     $questions.trigger( 'addquery.oc' );
 }

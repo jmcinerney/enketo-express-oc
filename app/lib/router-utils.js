@@ -9,6 +9,7 @@ const keys = {
     fsParticipant: `${config[ 'less secure encryption key' ]}fs-participant`,
     editRfc: `${config[ 'less secure encryption key' ]}edit-rfc`,
     editRfcC: `${config[ 'less secure encryption key' ]}edit-rfc-c`,
+    editHeadless: `${config[ 'less secure encryption key' ]}edit-headless`,
 };
 
 function enketoIdParam( req, res, next, id ) {
@@ -28,28 +29,32 @@ function encryptedEnketoIdParamView( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.view );
 }
 
-function encryptedEnketoIdParamViewDn( req, res, next, id ) {
+function encryptedEnketoIdViewDn( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.viewDn );
 }
 
-function encryptedEnketoIdParamViewDnc( req, res, next, id ) {
+function encryptedEnketoIdViewDnc( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.viewDnc );
 }
 
-function encryptedEnketoIdParamFsC( req, res, next, id ) {
+function encryptedEnketoIdFsC( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.fsC );
 }
 
-function encryptedEnketoIdParamFsParticipant( req, res, next, id ) {
+function encryptedEnketoIdFsParticipant( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.fsParticipant );
 }
 
-function encryptedEnketoIdParamEditRfc( req, res, next, id ) {
+function encryptedEnketoIdEditRfc( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.editRfc );
 }
 
-function encryptedEnketoIdParamEditRfcC( req, res, next, id ) {
+function encryptedEnketoIdEditRfcC( req, res, next, id ) {
     _encryptedEnketoIdParam( req, res, next, id, keys.editRfcC );
+}
+
+function encryptedEnketoIdEditHeadless( req, res, next, id ) {
+    _encryptedEnketoIdParam( req, res, next, id, keys.editHeadless );
 }
 
 function _encryptedEnketoIdParam( req, res, next, id, key ) {
@@ -85,10 +90,11 @@ module.exports = {
     idEncryptionKeys: keys,
     encryptedEnketoIdSingle: encryptedEnketoIdParamSingle,
     encryptedEnketoIdView: encryptedEnketoIdParamView,
-    encryptedEnketoIdViewDn: encryptedEnketoIdParamViewDn,
-    encryptedEnketoIdViewDnc: encryptedEnketoIdParamViewDnc,
-    encryptedEnketoIdFsC: encryptedEnketoIdParamFsC,
-    encryptedEnketoIdFsParticipant: encryptedEnketoIdParamFsParticipant,
-    encryptedEnketoIdEditRfc: encryptedEnketoIdParamEditRfc,
-    encryptedEnketoIdEditRfcC: encryptedEnketoIdParamEditRfcC,
+    encryptedEnketoIdViewDn,
+    encryptedEnketoIdViewDnc,
+    encryptedEnketoIdFsC,
+    encryptedEnketoIdEditRfc,
+    encryptedEnketoIdEditRfcC,
+    encryptedEnketoIdEditHeadless,
+    encryptedEnketoIdFsParticipant
 };

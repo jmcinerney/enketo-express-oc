@@ -3,6 +3,7 @@ const instanceModel = require( '../models/instance-model' );
 const cacheModel = require( '../models/cache-model' );
 const account = require( '../models/account-model' );
 const pdf = require( '../lib/pdf' );
+const headless = require( '../lib/headless' );
 const auth = require( 'basic-auth' );
 const express = require( 'express' );
 const utils = require( '../lib/utils' );
@@ -48,6 +49,14 @@ router
         req.webformType = 'pdf';
         next();
     } )
+    .post( '*/headless', ( req, res, next ) => {
+        req.webformType = 'headless';
+        next();
+    } )
+    //.post( '*/rfc/headless', ( req, res, next ) => {
+    //    req.webformType = 'headless-rfc';
+    //    next();
+    //} )
     .post( '/instance/note*', ( req, res, next ) => {
         req.webformType = 'view-instance-dn';
         next();
@@ -91,6 +100,8 @@ router
     .post( '/instance/note', cacheInstance )
     .post( '/instance/note/c', cacheInstance )
     .post( '/instance/edit/participant', cacheInstance )
+    .post( '/instance/headless', cacheInstance )
+    //.post( '/instance/rfc/headless', cacheInstance )
     .all( '*', ( req, res, next ) => {
         const error = new Error( 'Not allowed.' );
         error.status = 405;
@@ -217,6 +228,8 @@ function cacheInstance( req, res, next ) {
             const status = 201;
             if ( req.webformType === 'pdf' ) {
                 _renderPdf( status, enketoId, req, res );
+            } else if ( req.webformType === 'headless' /*|| req.webformType === 'headless-rfc' */ ) {
+                _renderHeadless( status, enketoId, req, res );
             } else {
                 _render( status, _generateWebformUrls( enketoId, req ), res );
             }
@@ -390,6 +403,7 @@ function _generateWebformUrls( id, req ) {
     const idEditRfcC = `::${utils.insecureAes192Encrypt( id, keys.editRfcC )}`;
     const idFsC = `::${utils.insecureAes192Encrypt( id, keys.fsC )}`;
     const idFsParticipant = `::${utils.insecureAes192Encrypt( id, keys.fsParticipant )}`;
+    const idPartEditHeadless = `::${utils.insecureAes192Encrypt( id, keys.editHeadless )}`;
 
     let url;
 
@@ -414,6 +428,15 @@ function _generateWebformUrls( id, req ) {
                 const rfcId = dnClosePart ? idEditRfcC : idEditRfc;
                 const queryString = _generateQueryString( [ req.ecid, req.pid, `instance_id=${req.body.instance_id}`, req.parentWindowOriginParam, req.returnQueryParam, req.goToErrorUrl, req.jini ] );
                 url = `${BASEURL}edit/${FSPATH}rfc/${dnClosePart}${IFRAMEPATH}${rfcId}${queryString}${hash}`;
+                break;
+            }
+        case 'headless':
+            //case 'headless-rfc':
+            {
+                //const rfcPath = req.webformType === 'headless-rfc' ? 'rfc/' : '';
+                const editId = /*req.webformType === 'headless-rfc' ? idPartEditRfc : */ idPartEditHeadless;
+                const queryString = _generateQueryString( [ `instance_id=${req.body.instance_id}`, req.completeButtonParam ] );
+                url = `${BASEURL}edit/${FSPATH}headless/${editId}${queryString}`;
                 break;
             }
         case 'single':
@@ -504,6 +527,21 @@ function _renderPdf( status, id, req, res ) {
                 .end( pdfBuffer, 'binary' );
         } )
         .catch( e => {
-            _render( '500', `PDF generation failed: ${e.message}`, res );
+            _render( 500, `PDF generation failed: ${e.message}`, res );
+        } );
+}
+
+function _renderHeadless( status, id, req, res ) {
+    const url = _generateWebformUrls( id, req ).url;
+    return headless.run( url )
+        .then( function( fieldsubmissions ) {
+            const message = 'OK';
+            const code = fieldsubmissions > 0 ? 201 : 200;
+            res
+                .status( code )
+                .json( { message, fieldsubmissions, code } );
+        } )
+        .catch( e => {
+            _render( e.status || 500, e.message, res );
         } );
 }
