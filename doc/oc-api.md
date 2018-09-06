@@ -175,8 +175,6 @@ Same as POST /instance/note except that this view has a **Close button** in the 
 
 Loads a record headlessly, adds autoqueries and submits. 
 
-TODO: describe completeness, if applicable to the API => https://github.com/kobotoolbox/enketo-express/issues/972
-
 Otherwise, use like [POST /instance](http://apidocs.enketo.org/v2/#/post-instance) (without `return_url` and `go_to` parameters)
 
 ### DELETE /instance
