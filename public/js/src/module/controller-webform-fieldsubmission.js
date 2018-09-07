@@ -138,7 +138,7 @@ function init( selector, data, loadWarnings ) {
         .then( function( form ) {
             if ( settings.headless ) {
                 console.log( 'doing headless things' );
-                var $result = $( '<div id="headless-result"/>' );
+                var $result = $( '<div id="headless-result" style="position: fixed; background: pink; top: 0; left: 50%;"/>' );
                 if ( loadErrors.length ) {
                     $result.append( '<span id="error">' + loadErrors[ 0 ] + '</span>' );
                     $( 'body' ).append( $result );
@@ -212,13 +212,12 @@ function _headlessCloseComplete() {
             }
             return fieldSubmissionQueue.submitAll();
         } ).then( function() {
-            console.log( 'submissions left in queue', fieldSubmissionQueue.get() );
+
             if ( Object.keys( fieldSubmissionQueue.get() ).length > 0 ) {
                 throw new Error( 'Failed to submit fieldsubmissions' );
             }
-            // TODO: add logic for Completed records
-            var completeRecord = false;
-            if ( completeRecord ) {
+
+            if ( !form.model.isMarkedComplete() ) {
                 return fieldSubmissionQueue.complete( form.instanceID, form.deprecatedID );
             }
         } ).then( function() {

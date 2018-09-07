@@ -539,7 +539,7 @@ function _renderHeadless( status, id, req, res ) {
             const code = fieldsubmissions > 0 ? 201 : 200;
             res
                 .status( code )
-                .json( { message, fieldsubmissions, code } );
+                .json( { message, fieldsubmissions } );
         } )
         .catch( e => {
             _render( e.status || 500, e.message, res );

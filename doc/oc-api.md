@@ -175,13 +175,12 @@ Same as POST /instance/note except that this view has a **Close button** in the 
 
 Loads a record headlessly, adds autoqueries and submits. 
 
-The result object has a `"message"`, `"code"`, and `"fieldsubmissions"` property. The `"message"` value contains an error message if the `"code"` is not `201` (otherwise the value is "OK"). The `"fieldsubmissions"` value is the number of fieldsubmission that were successfully submitted. For example:
+The result object has a `"message"`, and `"fieldsubmissions"` property. The `"message"` value contains an error message if the HTTP response is not `200` or `201` (otherwise the value is "OK"). The `"fieldsubmissions"` value is the number of fieldsubmissions that were successfully submitted. For example:
 
 ```json
 {
     "message": "OK",
-    "fieldsubmissions": 1,
-    "code": 201
+    "fieldsubmissions": 1
 }
 ```
 
